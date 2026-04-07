@@ -4,12 +4,13 @@ import { Navbar } from './components/Navbar'
 import { ProjectsSection } from './components/ProjectsSection'
 import { ExperienceSection } from './components/ExperienceSection'
 import { SkillsSection } from './components/SkillsSection'
-import { ConstellationWidget } from './components/ConstellationWidget'
 import { SocialFooter } from './components/SocialFooter'
+import { LandingIntro } from './components/LandingIntro'
 
 function App() {
   return (
     <>
+      <LandingIntro />
       <CustomCursor />
       <Navbar />
       <main className="mx-auto w-[min(1100px,95%)] pb-16">
@@ -17,7 +18,6 @@ function App() {
         <ProjectsSection />
         <ExperienceSection />
         <SkillsSection />
-        <ConstellationWidget />
         <SocialFooter />
       </main>
     </>
