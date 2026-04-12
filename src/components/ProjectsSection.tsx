@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ExternalLink } from 'lucide-react'
 import { motion, useMotionValue, useTransform } from 'framer-motion'
 import { portfolioData } from '../data/portfolio'
 import { SectionHeading } from './SectionHeading'
@@ -10,11 +9,21 @@ const statusClasses: Record<string, string> = {
   'coming-soon': 'text-slate-300 border-slate-300/35 bg-slate-400/10',
 }
 
-const CARD_MIN_W = 280
-const GAP = 20
+const CARD_MIN_W = 300
+const GAP = 112
 const STEP = CARD_MIN_W + GAP
 const ARC_LIFT = 72
+const MAX_TILT_DEG = 20
 const LOOP_COPIES = 3
+
+const AUTO_SPEED = 0.96
+const DRAG_THRESHOLD_PX = 12
+const INERTIA_FRICTION = 0.93
+const INERTIA_MIN = 0.16
+const INERTIA_BOOST = 1.22
+const THROW_VELOCITY_CAP = 32
+
+type Sample = { x: number; t: number }
 
 type ProjectCardProps = {
   project: (typeof portfolioData.projects)[number]
@@ -36,7 +45,12 @@ function ProjectCard({ project, index, offset, viewportWidth, step }: ProjectCar
   const rotateZ = useTransform(offset, (o) => {
     const centerX = index * step - o + CARD_MIN_W / 2
     const rel = Math.max(-1, Math.min(1, (centerX - halfVw) / halfVw))
-    return 30 * rel
+    const dyDrel = 2 * ARC_LIFT * rel
+    const dxDrel = halfVw
+    const rad = Math.atan2(dyDrel, dxDrel)
+    let deg = (rad * 180) / Math.PI
+    deg = Math.max(-MAX_TILT_DEG, Math.min(MAX_TILT_DEG, deg))
+    return deg
   })
 
   const scale = useTransform(offset, (o) => {
@@ -47,6 +61,8 @@ function ProjectCard({ project, index, offset, viewportWidth, step }: ProjectCar
 
   return (
     <motion.article
+      data-project-card
+      data-github-url={project.githubUrl}
       style={{
         y: translateY,
         rotate: rotateZ,
@@ -55,10 +71,12 @@ function ProjectCard({ project, index, offset, viewportWidth, step }: ProjectCar
         minHeight: 320,
         transformStyle: 'preserve-3d',
       }}
-      className="relative shrink-0 rounded-2xl border border-white/[0.08] bg-[#1e1e1e] p-5 shadow-[0_0_40px_rgba(0,0,0,0.45)]"
+      className="group relative shrink-0 cursor-pointer select-none rounded-2xl border border-white/[0.08] bg-[#1e1e1e] p-5 shadow-[0_0_40px_rgba(0,0,0,0.45)]"
     >
       <div className="mb-3 flex items-start justify-between gap-3">
-        <h3 className="text-lg font-semibold text-white">{project.title}</h3>
+        <h3 className="text-lg font-semibold text-white decoration-[#09bd9c]/80 decoration-2 underline-offset-[6px] group-hover:underline">
+          {project.title}
+        </h3>
         <span
           className={`shrink-0 rounded-full border px-2 py-1 text-xs capitalize ${
             statusClasses[project.status ?? 'coming-soon']
@@ -78,17 +96,6 @@ function ProjectCard({ project, index, offset, viewportWidth, step }: ProjectCar
           </li>
         ))}
       </ul>
-      {project.href ? (
-        <a
-          href={project.href}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-4 inline-flex items-center gap-2 text-sm text-[#09bd9c] transition hover:text-[#2dd4b8]"
-        >
-          View project
-          <ExternalLink size={16} />
-        </a>
-      ) : null}
     </motion.article>
   )
 }
@@ -102,12 +109,16 @@ export function ProjectsSection() {
   const [viewportWidth, setViewportWidth] = useState(
     typeof window !== 'undefined' ? window.innerWidth : 1200
   )
-  const pausedRef = useRef(false)
   const draggingRef = useRef(false)
-  const dragStartRef = useRef(0)
-  const offsetStartRef = useRef(0)
+  const inertiaRef = useRef(false)
+  const inertiaVelRef = useRef(0)
+  const dragStartXRef = useRef(0)
+  const dragOffsetStartRef = useRef(0)
+  const samplesRef = useRef<Sample[]>([])
+  const pointerDownRef = useRef<{ x: number; y: number; githubUrl: string | null } | null>(null)
+  const maxDragRef = useRef(0)
   const rafRef = useRef<number>(0)
-  const wheelAreaRef = useRef<HTMLDivElement>(null)
+  const lastTsRef = useRef<number>(0)
 
   const repeated = useMemo(() => {
     const out: Array<{ project: (typeof projects)[number]; key: string; index: number }> = []
@@ -126,12 +137,6 @@ export function ProjectsSection() {
 
   const stripX = useTransform(offset, (o) => -o)
 
-  useEffect(() => {
-    const onResize = () => setViewportWidth(window.innerWidth)
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [])
-
   const wrapOffset = useCallback(
     (value: number) => {
       let v = value
@@ -143,83 +148,126 @@ export function ProjectsSection() {
   )
 
   useEffect(() => {
-    const tick = () => {
-      let next = offset.get()
-      if (!pausedRef.current && !draggingRef.current) {
-        next += 0.35
+    const onResize = () => setViewportWidth(window.innerWidth)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  const pushSample = (x: number, t: number) => {
+    const list = samplesRef.current
+    list.push({ x, t })
+    while (list.length > 6) list.shift()
+  }
+
+  const endInertiaFromSamples = () => {
+    const list = samplesRef.current
+    if (list.length < 2) return
+    const a = list[0]
+    const b = list[list.length - 1]
+    const dt = b.t - a.t
+    if (dt < 16) return
+    const vPxPerMs = (b.x - a.x) / dt
+    let v = -vPxPerMs * INERTIA_BOOST * 16
+    v = Math.max(-THROW_VELOCITY_CAP, Math.min(THROW_VELOCITY_CAP, v))
+    if (Math.abs(v) < INERTIA_MIN) return
+    inertiaVelRef.current = v
+    inertiaRef.current = true
+  }
+
+  useEffect(() => {
+    const tick = (now: number) => {
+      const last = lastTsRef.current || now
+      const dt = Math.min(48, now - last) / 16.67
+      lastTsRef.current = now
+
+      let o = offset.get()
+
+      if (inertiaRef.current) {
+        o += inertiaVelRef.current * dt
+        inertiaVelRef.current *= Math.pow(INERTIA_FRICTION, dt * 1.35)
+        if (Math.abs(inertiaVelRef.current) < INERTIA_MIN) {
+          inertiaRef.current = false
+          inertiaVelRef.current = 0
+        }
+        offset.set(wrapOffset(o))
+      } else if (!draggingRef.current) {
+        o += AUTO_SPEED * dt
+        offset.set(wrapOffset(o))
       }
-      offset.set(wrapOffset(next))
+
       rafRef.current = requestAnimationFrame(tick)
     }
     rafRef.current = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(rafRef.current)
   }, [offset, wrapOffset])
 
-  const onPointerDown = (e: React.PointerEvent) => {
-    if ((e.target as HTMLElement).closest('a')) return
+  const onStripPointerDown = (e: React.PointerEvent) => {
+    if (e.button !== 0) return
+    const card = (e.target as HTMLElement).closest('[data-project-card]')
+    const githubUrl = card?.getAttribute('data-github-url') ?? null
+
     draggingRef.current = true
-    ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
-    dragStartRef.current = e.clientX
-    offsetStartRef.current = offset.get()
-  }
+    inertiaRef.current = false
+    inertiaVelRef.current = 0
+    samplesRef.current = []
+    maxDragRef.current = 0
+    dragStartXRef.current = e.clientX
+    dragOffsetStartRef.current = offset.get()
+    pushSample(e.clientX, e.timeStamp)
+    pointerDownRef.current = { x: e.clientX, y: e.clientY, githubUrl }
 
-  const onPointerMove = (e: React.PointerEvent) => {
-    if (!draggingRef.current) return
-    const dx = e.clientX - dragStartRef.current
-    offset.set(wrapOffset(offsetStartRef.current - dx))
-  }
-
-  const onPointerUp = (e: React.PointerEvent) => {
-    draggingRef.current = false
-    try {
-      ;(e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId)
-    } catch {
-      /* ignore */
+    const onWindowPointerMove = (ev: PointerEvent) => {
+      if (!draggingRef.current) return
+      pushSample(ev.clientX, ev.timeStamp)
+      const dx = ev.clientX - dragStartXRef.current
+      maxDragRef.current = Math.max(maxDragRef.current, Math.abs(dx))
+      offset.set(wrapOffset(dragOffsetStartRef.current - dx))
     }
-  }
 
-  useEffect(() => {
-    const el = wheelAreaRef.current
-    if (!el) return
-    const onWheel = (event: WheelEvent) => {
-      event.preventDefault()
-      offset.set(wrapOffset(offset.get() + event.deltaY * 0.45))
+    const onWindowPointerUp = (ev: PointerEvent) => {
+      window.removeEventListener('pointermove', onWindowPointerMove)
+      window.removeEventListener('pointerup', onWindowPointerUp)
+      window.removeEventListener('pointercancel', onWindowPointerUp)
+
+      if (!draggingRef.current) return
+      draggingRef.current = false
+      endInertiaFromSamples()
+      samplesRef.current = []
+
+      const down = pointerDownRef.current
+      pointerDownRef.current = null
+      const maxDrag = maxDragRef.current
+      maxDragRef.current = 0
+
+      if (!down?.githubUrl) return
+      const dist = Math.hypot(ev.clientX - down.x, ev.clientY - down.y)
+      if (maxDrag >= DRAG_THRESHOLD_PX || dist >= DRAG_THRESHOLD_PX) return
+      window.open(down.githubUrl, '_blank', 'noopener,noreferrer')
     }
-    el.addEventListener('wheel', onWheel, { passive: false })
-    return () => el.removeEventListener('wheel', onWheel)
-  }, [offset, wrapOffset])
+
+    window.addEventListener('pointermove', onWindowPointerMove)
+    window.addEventListener('pointerup', onWindowPointerUp)
+    window.addEventListener('pointercancel', onWindowPointerUp)
+  }
 
   return (
-    <section id="projects" className="pt-20">
+    <section id="projects" className="scroll-mt-28 pt-2">
       <div className="mx-auto w-[min(1100px,95%)]">
         <SectionHeading
           eyebrow="Featured Work"
           title="Projects"
-          description="Drag along the arc or let it drift. Cards ride a shallow orbit past the screen edges."
+          description="Cards drift automatically. Click opens GitHub; click-drag throws with momentum. Page scroll is unchanged."
         />
       </div>
 
       <div
-        className="relative mt-8 w-screen max-w-[100vw] cursor-grab active:cursor-grabbing"
+        className="relative mt-10 w-screen max-w-[100vw] cursor-grab select-none active:cursor-grabbing"
         style={{ marginLeft: 'calc(50% - 50vw)', marginRight: 'calc(50% - 50vw)' }}
-        onPointerEnter={() => {
-          pausedRef.current = true
-        }}
-        onPointerLeave={() => {
-          pausedRef.current = false
-          draggingRef.current = false
-        }}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
+        onPointerDown={onStripPointerDown}
       >
-        <div
-          ref={wheelAreaRef}
-          className="h-[min(420px,52vh)] overflow-x-clip overflow-y-visible md:h-[460px]"
-        >
+        <div className="h-[min(420px,52vh)] overflow-x-clip overflow-y-visible select-none md:h-[460px]">
           <motion.div
-            className="absolute left-0 top-0 flex h-full items-end gap-5 px-0"
+            className="absolute left-0 top-0 flex h-full items-end gap-[7rem] px-0"
             style={{
               x: stripX,
             }}

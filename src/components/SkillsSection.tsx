@@ -29,7 +29,7 @@ function SkillColumn({ title, items }: { title: string; items: string[] }) {
 
 export function SkillsSection() {
   return (
-    <section id="skills" className="pt-20">
+    <section id="skills" className="scroll-mt-28 pt-2">
       <SectionHeading
         eyebrow="Toolkit"
         title="Skills & Tools"

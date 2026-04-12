@@ -2,6 +2,8 @@ export type Project = {
   title: string
   description: string
   tech: string[]
+  /** Opens when the project card is clicked (e.g. repo URL) */
+  githubUrl: string
   href?: string
   status?: 'live' | 'in-progress' | 'coming-soon'
 }
@@ -42,42 +44,49 @@ export const portfolioData: PortfolioData = {
       title: 'Project One',
       description: 'Brief project summary: what it does, who it helps, and your contribution.',
       tech: ['React', 'TypeScript', 'Node.js'],
+      githubUrl: 'https://github.com/your-username/project-one',
       status: 'live',
     },
     {
       title: 'Project Two',
       description: 'Brief project summary: what it does, who it helps, and your contribution.',
       tech: ['Python', 'Flask', 'PostgreSQL'],
+      githubUrl: 'https://github.com/your-username/project-two',
       status: 'in-progress',
     },
     {
       title: 'Project Three',
       description: 'Brief project summary: what it does, who it helps, and your contribution.',
       tech: ['Java', 'Spring Boot', 'Docker'],
+      githubUrl: 'https://github.com/your-username/project-three',
       status: 'live',
     },
     {
       title: 'Project Four',
       description: 'Brief project summary: what it does, who it helps, and your contribution.',
       tech: ['Next.js', 'Tailwind CSS', 'Supabase'],
+      githubUrl: 'https://github.com/your-username/project-four',
       status: 'in-progress',
     },
     {
       title: 'Project Five',
       description: 'Reserved slot for your next project.',
       tech: ['TBD'],
+      githubUrl: 'https://github.com/your-username',
       status: 'coming-soon',
     },
     {
       title: 'Project Six',
       description: 'Brief project summary: what it does, who it helps, and your contribution.',
       tech: ['Rust', 'WASM'],
+      githubUrl: 'https://github.com/your-username/project-six',
       status: 'in-progress',
     },
     {
       title: 'Project Seven',
       description: 'Brief project summary: what it does, who it helps, and your contribution.',
       tech: ['Go', 'gRPC', 'Kubernetes'],
+      githubUrl: 'https://github.com/your-username/project-seven',
       status: 'live',
     },
   ],
