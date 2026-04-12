@@ -68,6 +68,18 @@ export const portfolioData: PortfolioData = {
       tech: ['TBD'],
       status: 'coming-soon',
     },
+    {
+      title: 'Project Six',
+      description: 'Brief project summary: what it does, who it helps, and your contribution.',
+      tech: ['Rust', 'WASM'],
+      status: 'in-progress',
+    },
+    {
+      title: 'Project Seven',
+      description: 'Brief project summary: what it does, who it helps, and your contribution.',
+      tech: ['Go', 'gRPC', 'Kubernetes'],
+      status: 'live',
+    },
   ],
   experience: [
     {

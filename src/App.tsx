@@ -1,5 +1,5 @@
-import { CustomCursor } from './components/CustomCursor'
 import { HeroSection } from './components/HeroSection'
+import { AboutSection } from './components/AboutSection'
 import { Navbar } from './components/Navbar'
 import { ProjectsSection } from './components/ProjectsSection'
 import { ExperienceSection } from './components/ExperienceSection'
@@ -11,10 +11,10 @@ function App() {
   return (
     <>
       <LandingIntro />
-      <CustomCursor />
       <Navbar />
+      <HeroSection />
       <main className="mx-auto w-[min(1100px,95%)] pb-16">
-        <HeroSection />
+        <AboutSection />
         <ProjectsSection />
         <ExperienceSection />
         <SkillsSection />

@@ -2,6 +2,9 @@
 
 :root {
   color-scheme: dark;
+  --bg-base: #121212;
+  --bg-surface: #1e1e1e;
+  --accent: #09bd9c;
 }
 
 * {
@@ -17,27 +20,11 @@ body,
 
 body {
   font-family: Inter, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background:
-    radial-gradient(circle at 18% 12%, rgba(255, 0, 128, 0.15), transparent 35%),
-    radial-gradient(circle at 82% 16%, rgba(82, 255, 255, 0.12), transparent 42%),
-    radial-gradient(circle at 50% 120%, rgba(123, 0, 255, 0.22), transparent 45%),
-    #02030a;
-  color: #ecf1ff;
+  background-color: var(--bg-base);
+  background-image:
+    radial-gradient(ellipse 90% 55% at 85% -5%, rgba(9, 189, 156, 0.22), transparent 52%),
+    radial-gradient(ellipse 70% 45% at 5% 105%, rgba(9, 189, 156, 0.1), transparent 48%),
+    radial-gradient(ellipse 50% 35% at 50% 50%, rgba(9, 189, 156, 0.04), transparent 65%);
+  color: #e8e8e8;
   overflow-x: hidden;
-  cursor: none;
-}
-
-a,
-button,
-[role='button'] {
-  cursor: none;
-}
-
-@media (max-width: 900px), (prefers-reduced-motion: reduce) {
-  body,
-  a,
-  button,
-  [role='button'] {
-    cursor: auto;
-  }
 }

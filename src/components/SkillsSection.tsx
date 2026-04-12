@@ -4,20 +4,26 @@ import { SectionHeading } from './SectionHeading'
 
 function SkillColumn({ title, items }: { title: string; items: string[] }) {
   return (
-    <article className="rounded-3xl border border-white/15 bg-gradient-to-br from-slate-950/95 via-slate-950/80 to-fuchsia-950/20 p-6 shadow-[0_14px_50px_rgba(0,0,0,0.4)]">
+    <motion.article
+      initial={{ opacity: 0, y: 36 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.15, margin: '-32% 0px -28% 0px' }}
+      transition={{ duration: 0.5 }}
+      className="rounded-2xl border border-white/[0.08] bg-[#1e1e1e] p-6 shadow-[0_14px_50px_rgba(0,0,0,0.4)]"
+    >
       <h3 className="mb-5 text-lg font-semibold text-white">{title}</h3>
       <ul className="flex flex-wrap gap-2">
         {items.map((skill) => (
           <motion.li
             key={`${title}-${skill}`}
             whileHover={{ scale: 1.12, y: -6 }}
-            className="rounded-full border border-cyan-300/35 bg-cyan-400/10 px-3 py-1 text-sm text-cyan-100 shadow-[0_0_18px_rgba(34,211,238,0.25)]"
+            className="rounded-full border border-[#09bd9c]/30 bg-[#09bd9c]/10 px-3 py-1 text-sm text-[#09bd9c] shadow-[0_0_18px_rgba(9,189,156,0.15)]"
           >
             {skill}
           </motion.li>
         ))}
       </ul>
-    </article>
+    </motion.article>
   )
 }
 

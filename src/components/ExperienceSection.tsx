@@ -16,16 +16,16 @@ export function ExperienceSection() {
             key={`${item.company}-${item.period}`}
             initial={{ opacity: 0, y: 60, rotateX: 8 }}
             whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-            viewport={{ once: true, amount: 0.45 }}
+            viewport={{ once: true, amount: 0.15, margin: '-32% 0px -28% 0px' }}
             transition={{ duration: 0.55, delay: index * 0.07 }}
             whileHover={{ scale: 1.015, y: -8 }}
-            className="sticky top-20 rounded-3xl border border-white/15 bg-gradient-to-br from-slate-950/95 via-violet-950/30 to-cyan-950/25 p-7 shadow-[0_20px_80px_rgba(0,0,0,0.45)]"
+            className="sticky top-20 rounded-2xl border border-white/[0.08] bg-[#1e1e1e] p-7 shadow-[0_20px_80px_rgba(0,0,0,0.45)]"
           >
             <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
               <h3 className="text-xl font-semibold text-white">
                 {item.role} · {item.company}
               </h3>
-              <span className="rounded-full border border-fuchsia-300/40 bg-fuchsia-400/10 px-3 py-1 font-mono text-xs uppercase tracking-wider text-fuchsia-200">
+              <span className="rounded-full border border-[#09bd9c]/35 bg-[#09bd9c]/10 px-3 py-1 font-mono text-xs uppercase tracking-wider text-[#09bd9c]">
                 {item.period}
               </span>
             </div>
