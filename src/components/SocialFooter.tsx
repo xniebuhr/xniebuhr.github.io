@@ -3,7 +3,7 @@ import { portfolioData } from '../data/portfolio'
 
 export function SocialFooter() {
   return (
-    <footer className="mt-20 rounded-2xl border border-white/[0.08] bg-[#1e1e1e] p-6">
+    <footer className="pointer-events-auto mt-20 rounded-2xl border border-white/[0.08] bg-[#1e1e1e] p-6">
       <p className="mb-4 text-sm uppercase tracking-[0.2em] text-neutral-500">Connect</p>
       <div className="flex flex-wrap items-center gap-3">
         <a

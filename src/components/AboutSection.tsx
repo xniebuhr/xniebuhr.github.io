@@ -14,18 +14,36 @@ export function AboutSection() {
     target: ref,
     offset: ['start end', 'end start'],
   })
-  /** Stronger, readable fade as the block enters / leaves the viewport */
-  const opacity = useTransform(scrollYProgress, [0, 0.12, 0.22, 0.78, 0.88, 1], [0.35, 0.72, 1, 1, 0.72, 0.35])
-  const blurPx = useTransform(scrollYProgress, [0, 0.15, 0.85, 1], [6, 0, 0, 6])
+
+  const opacity = useTransform(scrollYProgress, [0, 0.16, 0.3, 0.72, 0.88, 1], [0.58, 0.78, 1, 1, 0.78, 0.58])
+
+  /** Max blur 10px. Slower, later ramps on both ends to avoid sudden blur changes. */
+  const MAX_BLUR = 10
+  const blurPx = useTransform(scrollYProgress, (p) => {
+    const enterStart = 0
+    const enterEnd = 0.24
+    const exitStart = 0.84
+    if (p <= enterEnd) {
+      const t = Math.min(1, Math.max(0, (p - enterStart) / (enterEnd - enterStart)))
+      const eased = 1 - (1 - t) ** 2.4
+      return MAX_BLUR * (1 - eased)
+    }
+    if (p >= exitStart) {
+      const t = Math.min(1, Math.max(0, (p - exitStart) / (1 - exitStart)))
+      const easedInOut =
+        t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2
+      return MAX_BLUR * easedInOut
+    }
+    return 0
+  })
   const blurFilter = useTransform(blurPx, (v) => `blur(${v}px)`)
-  const y = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [12, 0, 0, 12])
 
   return (
     <motion.section
       ref={ref}
       id="about"
-      style={{ opacity, filter: blurFilter, y }}
-      className="relative z-[2] mt-[calc(1.5rem+min(16.667vh,6rem))] min-h-[min(52vh,560px)] rounded-2xl border border-white/[0.08] bg-[#1e1e1e] p-8 md:p-12"
+      style={{ opacity, filter: blurFilter }}
+      className="pointer-events-auto relative z-[6] mt-12 min-h-[min(52vh,560px)] rounded-2xl border border-white/[0.08] bg-[#1e1e1e] p-8 md:mt-16 md:p-12"
     >
       <SectionHeading eyebrow="About" title="A bit more about me" />
       <div className="max-w-3xl space-y-6 text-[17px] leading-relaxed text-neutral-300">

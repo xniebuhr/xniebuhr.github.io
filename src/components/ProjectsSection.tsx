@@ -251,7 +251,7 @@ export function ProjectsSection() {
   }
 
   return (
-    <section id="projects" className="scroll-mt-28 pt-2">
+    <section id="projects" className="pointer-events-auto scroll-mt-28 pt-2">
       <div className="mx-auto w-[min(1100px,95%)]">
         <SectionHeading
           eyebrow="Featured Work"
