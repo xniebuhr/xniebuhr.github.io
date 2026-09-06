@@ -256,7 +256,7 @@ export function ProjectsSection() {
         <SectionHeading
           eyebrow="Featured Work"
           title="Projects"
-          description="Cards drift automatically. Click opens GitHub; click-drag throws with momentum. Page scroll is unchanged."
+          description="Hands-on builds focused on backend development, secure infrastructure, and automation."
         />
       </div>
 

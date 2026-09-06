@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://xniebuhr.github.io/Developer-Website/sitemap.xml

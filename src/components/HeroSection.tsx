@@ -1,4 +1,6 @@
 import { portfolioData } from '../data/portfolio'
+import { DecryptedText } from './DecryptedText'
+import { RotatingText } from './RotatingText'
 
 export function HeroSection() {
   return (
@@ -6,20 +8,14 @@ export function HeroSection() {
       id="home"
       className="relative z-[6] w-full overflow-visible px-[clamp(1rem,4vw,2.5rem)] pb-12 pt-6 md:pb-16"
     >
-      <div className="mx-auto flex w-full max-w-[1600px] min-h-[min(78vh,900px)] flex-col items-center justify-center gap-10 lg:flex-row lg:items-center lg:justify-center">
-        <div className="min-w-0 max-w-xl shrink-0 text-center lg:max-w-[min(100%,26rem)] lg:text-left">
-          <h1 className="text-4xl font-bold leading-[1.1] tracking-tight text-white md:text-5xl lg:text-6xl">
-            {portfolioData.name}
+      <div className="mx-auto flex w-full max-w-[1600px] min-h-[min(78vh,900px)] flex-col items-center justify-center gap-10">
+        <div className="min-w-0 max-w-5xl text-center">
+          <h1 className="whitespace-nowrap text-[clamp(2.5rem,9vw,6.75rem)] font-bold leading-[1.05] tracking-tight text-white">
+            <DecryptedText text={portfolioData.name} />
           </h1>
-          <p className="mt-4 max-w-xl text-lg text-neutral-400 md:text-xl">{portfolioData.title}</p>
-        </div>
-
-        <div className="flex w-full min-w-0 flex-1 justify-center lg:max-w-[880px] lg:justify-end">
-          <div
-            className="aspect-[16/10] w-full max-w-[36.5rem] rounded-2xl border border-white/15 bg-black shadow-[0_0_0_1px_rgba(255,255,255,0.06)_inset] lg:w-full lg:max-w-none lg:min-w-[min(100%,30rem)] lg:translate-x-[80px]"
-            aria-label="Interactive desktop placeholder"
-            role="img"
-          />
+          <p className="mx-auto mt-6 max-w-3xl text-xl text-neutral-400 sm:text-2xl md:text-3xl">
+            <RotatingText phrases={portfolioData.taglines} interval={3600} />
+          </p>
         </div>
       </div>
     </section>

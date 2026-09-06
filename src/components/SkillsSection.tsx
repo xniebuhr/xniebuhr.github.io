@@ -82,27 +82,33 @@ export function SkillsSection() {
       <SectionHeading
         eyebrow="Toolkit"
         title="Skills & Tools"
-        description="Core technologies grouped into high-signal categories with sharper interactive styling."
+        description="A breakdown of the languages, platforms, and protocols powering my work across application development, cloud automation, and network security."
       />
       {showGrid && animCycle > 0 ? (
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <SkillColumn
             index={0}
             animCycle={animCycle}
-            title="Languages"
-            items={portfolioData.skills.languages}
+            title="Languages & Development"
+            items={portfolioData.skills.languagesAndDev}
           />
           <SkillColumn
             index={1}
             animCycle={animCycle}
-            title="Frameworks"
-            items={portfolioData.skills.frameworks}
+            title="Cloud & Infrastructure"
+            items={portfolioData.skills.cloudAndInfra}
           />
           <SkillColumn
             index={2}
             animCycle={animCycle}
-            title="Tools"
-            items={portfolioData.skills.tools}
+            title="Security"
+            items={portfolioData.skills.security}
+          />
+          <SkillColumn
+            index={3}
+            animCycle={animCycle}
+            title="Networking"
+            items={portfolioData.skills.networking}
           />
         </div>
       ) : null}
