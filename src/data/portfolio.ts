@@ -71,7 +71,7 @@ export const portfolioData: PortfolioData = {
     },
     {
       title: 'VPN & Firewall',
-      description: 'A custom, fully routed VPN architecture designed to bypass Deep Packet Inspection and restrictive firewalls through traffic encapsulation and managed routing, featuring its own custom firewall rules, hosted on an EC2 instacne',
+      description: 'A custom, fully routed VPN architecture designed to bypass Deep Packet Inspection and restrictive firewalls through traffic encapsulation and managed routing, featuring its own custom firewall rules, hosted on an EC2 instance',
       tech: ['Wireguard', 'Xray-Core', 'Ansible', 'AWS', 'UFW', 'Python', 'Powershell', 'Windows Task Scheduler'],
       githubUrl: 'https://github.com/xniebuhr/VPN-Firewall-Config',
       status: 'live',
@@ -93,37 +93,46 @@ export const portfolioData: PortfolioData = {
   ],
   experience: [
     {
-      role: 'Software Engineering Intern',
-      company: 'Company One',
-      period: 'Summer 2025',
+      role: 'IT Application Support & Development Intern',
+      company: 'Union Pacific Railroad',
+      period: 'August 2026 - Present',
       highlights: [
-        'Built internal tooling that improved team workflows.',
-        'Collaborated with engineers and product on feature delivery.',
+        'Manage high-volume IT ticketing queues, routing eligible requests through automated deployment pipelines',
+        'Perform remote software installations and troubleshooting via remote desktop tools for complex manual dependencies',
+        'Image and provision corporate hardware via USB deployment to ensure compliance with enterprise security standards',
+        'Resolve end-user application access issues while strictly adhering to technical documentation and procedures'
       ],
     },
     {
-      role: 'Software Engineering Intern',
-      company: 'Company Two',
+      role: 'Intern Team Lead',
+      company: 'NebraskaCYBER MATRIX Lab',
+      period: 'September 2025 - Present',
+      highlights: [
+        'Directed the development of SOC standard operating procedures and incident response workflows, formalizing documentation for tool evaluation and student learning modules',
+        'Onboarded and mentored 6 incoming interns, structuring daily workloads and driving team collaboration',
+        'Lead the design and implementation of a custom EDR/AV pipeline using ClamAV and Splunk, maintaining scripts to automate log collection and signature updates',
+        'Serving as the primary technical point of contact for security tool support, ensuring infrastructure stability and data integrity across the SOC pipeline'
+      ],
+    },
+    {
+      role: 'Software Development Intern',
+      company: 'Election Systems & Software',
       period: 'Summer 2026',
       highlights: [
-        'Implemented production features and improved code quality.',
-        'Contributed tests and documentation across services.',
+        'Developed full-stack features for a unified product platform, building robust backend APIs and databases using C# and .NET',
+        'Built and integrated user-facing frontend components with Angular to communicate seamlessly with backend services',
+        'Collaborated across business units, embedded engineering, and development teams to gather requirements for a dedicated product module',
+        'Engineered a core product section from initial concept through integration into the company\'s broader software ecosystem'
       ],
     },
     {
-      role: 'Software Engineering Intern',
-      company: 'Company Three',
-      period: 'Summer 2027',
+      role: 'Crew Member',
+      company: 'Panera Bread',
+      period: 'September 2022 - May 2025',
       highlights: [
-        'Add the real highlights for this role whenever you are ready.',
-        'This card was added so the stack now shows four roles.',
+        'Managed high-volume order processing and provided consistent, efficient customer service during peak operational hours',
+        'Trained 5 incoming crew members on operational workflows, point-of-sale systems, and customer service standards'
       ],
-    },
-    {
-      role: 'Future Internship Slot',
-      company: 'Coming Soon',
-      period: 'Future',
-      highlights: ['This card is ready for your next internship.'],
     },
   ],
   skills: {
